@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'produto',
 
     # Somente necessário no ambiente de desenvolvimento
     'debug_toolbar',
