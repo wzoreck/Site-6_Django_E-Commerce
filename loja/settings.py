@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'produto',
+    'pedido',
 
     # Somente necessário no ambiente de desenvolvimento
     'debug_toolbar',
