@@ -4,6 +4,7 @@ from django.db import models
 from django.conf import settings
 from django.db.models.enums import Choices
 from django.db.models.fields import SlugField
+from django.db.models.fields.related import ForeignKey
 
 class Produto(models.Model):
     nome = models.CharField(max_length=255)
@@ -55,3 +56,17 @@ class Produto(models.Model):
 
     def __str__(self):
         return self.nome
+
+class Variacao(models.Model):
+    produto = models.ForeignKey(Produto, on_delete=models.CASCADE)
+    nome = models.CharField(max_length=50, blank=True, null=True)
+    preco = models.FloatField()
+    preco_promocional = models.FloatField(default=0)
+    estoque = models.PositiveIntegerField(default=1)
+
+    def __str__(self):
+        return self.nome or self.produto.nome
+
+    class Meta:
+        verbose_name = "Variação"
+        verbose_name_plural = "Variações"
