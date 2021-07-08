@@ -1,24 +1,31 @@
 from django.views import View
 from django.shortcuts import render
 from django.views.generic.list import ListView
+from django.http import HttpResponse
 
 # Create your views here.
 
 class ListaProdutos(ListView):
-    pass
+    def get(self, *args, **kwargs):
+        return HttpResponse('ListaProdutos')
 
 class DetalheProduto(View):
-    pass
+    def get(self, *args, **kwargs):
+        return HttpResponse('DetalheProduto')
 
 class AdiconarAoCarrinho(View):
-    pass
+    def get(self, *args, **kwargs):
+        return HttpResponse('AdiconarAoCarrinho')
 
 class RemoverDoCarrinho(View):
-    pass
+    def get(self, *args, **kwargs):
+        return HttpResponse('RemoverDoCarrinho')
 
 class Finalizar(View):
-    pass
+    def get(self, *args, **kwargs):
+        return HttpResponse('Finalizar')
 
 class Carrinho(View):
-    pass
+    def get(self, *args, **kwargs):
+        return HttpResponse('Carrinho')
 
