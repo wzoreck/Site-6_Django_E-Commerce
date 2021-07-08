@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'produto',
     'pedido',
+    'perfil',
 
     # Somente necessário no ambiente de desenvolvimento
     'debug_toolbar',
