@@ -7,9 +7,12 @@ from . import models
 class ListaProdutos(ListView):
     # QuerySet
     model = models.Produto
-
     # Somente isso já carrega o template
     template_name = 'produto/lista.html'
+    # Os objetos dentro do template vão se chamar produtos - coleção
+    context_object_name = 'produtos'
+    # Quantos produtos vao aparecer por página
+    paginate_by = 1
 
 class DetalheProduto(View):
     def get(self, *args, **kwargs):
