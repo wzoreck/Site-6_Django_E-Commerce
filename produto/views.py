@@ -2,12 +2,14 @@ from django.views import View
 from django.shortcuts import render
 from django.views.generic.list import ListView
 from django.http import HttpResponse
-
-# Create your views here.
+from . import models
 
 class ListaProdutos(ListView):
-    def get(self, *args, **kwargs):
-        return HttpResponse('ListaProdutos')
+    # QuerySet
+    model = models.Produto
+
+    # Somente isso já carrega o template
+    template_name = 'produto/lista.html'
 
 class DetalheProduto(View):
     def get(self, *args, **kwargs):
