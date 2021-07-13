@@ -13,7 +13,7 @@ class ListaProdutos(ListView):
     # Os objetos dentro do template vão se chamar produtos - coleção
     context_object_name = 'produtos'
     # Quantos produtos vao aparecer por página
-    paginate_by = 1
+    paginate_by = 8
 
 class DetalheProduto(DetailView):
     model = models.Produto
