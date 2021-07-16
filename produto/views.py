@@ -152,10 +152,6 @@ class RemoverDoCarrinho(View):
         self.request.session.save()
         return redirect(http_referer)
 
-class Finalizar(View):
-    def get(self, *args, **kwargs):
-        return HttpResponse('Finalizar')
-
 class Carrinho(View):
     template_name = 'produto/carrinho.html'
 
@@ -166,3 +162,6 @@ class Carrinho(View):
 
         return render(self.request, self.template_name, contexto)
 
+class ResumoDaCompra(View):
+    def get(self, *args, **kwargs):
+        return HttpResponse('ResumoDaCompra')
