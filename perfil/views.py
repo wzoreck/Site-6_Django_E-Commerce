@@ -1,10 +1,11 @@
+import copy
 from django.views import View
+from django.contrib import messages
 from django.http import HttpResponse
 from django.views.generic import ListView
 from django.contrib.auth.models import User
-from django.shortcuts import render, get_object_or_404
-from django.contrib.auth import authenticate, login
-import copy
+from django.contrib.auth import authenticate, login, logout
+from django.shortcuts import render, redirect, get_object_or_404
 
 from . import models
 from . import forms
@@ -58,9 +59,7 @@ class BasePerfil(View):
 
 class Criar(BasePerfil):
     def post(self, *args, **kwargs):
-        # Se tiver algum erro no formulário
-        if not self.userform.is_valid():
-            print('INVÁLIDO!')
+        if not self.userform.is_valid() or not self.perfilform.is_valid():
             return self.renderizar
 
         username = self.userform.cleaned_data.get('username')
@@ -115,15 +114,57 @@ class Criar(BasePerfil):
 
         self.request.session['carrinho'] = self.carrinho
         self.request.session.save()
+        
+        messages.success(
+            self.request,
+            'Seu cadastro foi realizado ou atualizado com sucesso'
+        )
+        
+        messages.success(
+            self.request,
+            'Você fez login e pode concluir sua compra'
+        )
+
+        return redirect('perfil:criar')
         return self.renderizar
+
 class Atualizar(View):
     def get(self, *args, **kwargs):
         return HttpResponse('Atualizar')
 
 class Login(View):
-    def get(self, *args, **kwargs):
-        return HttpResponse('Login')
+    def post(self, *args, **kwargs):
+        username = self.request.POST.get('username')
+        password = self.request.POST.get('password')
+        
+        if not username or not password:
+            messages.error(
+                self.request,
+                'Usuário ou Senha inválidos'
+            )
+            return redirect('perfil:criar')
+        
+        usuario = authenticate(self.request, username=username, password=password)
+
+        if not usuario:
+            messages.error(
+                self.request,
+                'Usuário ou Senha inválidos'
+            )
+            return redirect('perfil:criar')
+
+        login(self.request, user=usuario)
+
+        messages.success(
+            self.request,
+            'Login realizado com sucesso'
+        )
+        return redirect('produto:carrinho')
 
 class Logout(View):
     def get(self, *args, **kwargs):
-        return HttpResponse('Logout')
+        carrinho = copy.deepcopy(self.request.session.get('carrinho'))
+        logout(self.request)
+        self.request.session['carrinho'] = carrinho
+        self.request.session.save()
+        return redirect('produto:lista')
