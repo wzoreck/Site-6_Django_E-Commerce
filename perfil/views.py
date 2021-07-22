@@ -3,6 +3,8 @@ from django.http import HttpResponse
 from django.views.generic import ListView
 from django.contrib.auth.models import User
 from django.shortcuts import render, get_object_or_404
+from django.contrib.auth import authenticate, login
+import copy
 
 from . import models
 from . import forms
@@ -15,6 +17,9 @@ class BasePerfil(View):
     # Este metodo é executado toda vez que entrar na view
     def setup(self, *args, **kwargs):
         super().setup(*args, **kwargs)
+        
+        # Fazer uma copia do carrinho para quando alterar a senha e finalizar a sessão não perder o carrinho
+        self.carrinho = copy.deepcopy(self.request.session.get('carrinho', {}))
 
         self.perfil = None
         
@@ -29,7 +34,10 @@ class BasePerfil(View):
                     usuario=self.request.user,
                     instance=self.request.user
                 ),
-                'perfilform': forms.PerfilForm(data=self.request.POST or None)
+                'perfilform': forms.PerfilForm(
+                    data=self.request.POST or None,
+                    instance=self.perfil
+                )
             }
         else:
             self.contexto = {
@@ -39,6 +47,9 @@ class BasePerfil(View):
 
         self.userform = self.contexto['userform']
         self.perfilform = self.contexto['perfilform']
+
+        if self.request.user.is_authenticated:
+            self.template_name = 'perfil/atualizar.html'
 
         self.renderizar = render(self.request, self.template_name, self.contexto)
 
@@ -63,7 +74,7 @@ class Criar(BasePerfil):
             usuario = get_object_or_404(User, username=self.request.user.username)
     
             usuario.username = username
-            
+
             if password:
                 usuario.set_password(password)
 
@@ -71,6 +82,15 @@ class Criar(BasePerfil):
             usuario.first_name = first_name
             usuario.last_name = last_name
             usuario.save()
+
+            if not self.perfil:
+                self.perfilform.cleaned_data['usuario'] = usuario
+                perfil = models.Perfil(**self.perfilform.cleaned_data)
+                perfil.save()
+            else:
+                perfil = self.perfilform.save(commit=False)
+                perfil.usuario = usuario
+                perfil.save()
 
         # Usuário não logado (novo usuário)
         else:
@@ -82,11 +102,19 @@ class Criar(BasePerfil):
             perfil = self.perfilform.save(commit=False)
             perfil.usuario = usuario
             perfil.save()
+        
+        if password:
+            autentica = authenticate(
+                self.request,
+                username=usuario,
+                password=password
+            )
 
-        print('VÁLIDO!')
+            if autentica:
+                login(self.request, user=usuario)
 
-        # Verificar se consegui obter algum perfil do BD
-        print(f'OBTIDO PERFIL: {self.perfil}')
+        self.request.session['carrinho'] = self.carrinho
+        self.request.session.save()
         return self.renderizar
 class Atualizar(View):
     def get(self, *args, **kwargs):
