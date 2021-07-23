@@ -59,6 +59,13 @@ class Pagar(View):
                 self.request.session.save()
                 return redirect('produto:carrinho')
 
+        '''
+        NAO IMPLENTADO POR CONTA DE NAO TER CRIADO O UTILS DURANTE O CURSO!!!
+
+        qtd_total_carrinho = utils
+        valor_total_carrinho = utils
+        '''
+
         contexto = {
 
         }
