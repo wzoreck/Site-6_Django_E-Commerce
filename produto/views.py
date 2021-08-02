@@ -20,6 +20,8 @@ class ListaProdutos(ListView):
     context_object_name = 'produtos'
     # Quantos produtos vao aparecer por página
     paginate_by = 8
+    # Ordenar decrescente a lista de produtos
+    ordering = ['-id']
 
 class DetalheProduto(DetailView):
     model = models.Produto
